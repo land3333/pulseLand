@@ -7,11 +7,463 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <style>
+    /* ---------- RESET & BASE (Bleu & Noir) ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #0B0F1C;  /* Noir profond avec une touche bleutée */
+      color: #EFF3FF;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ========== SIDEBAR ========== */
+    .sidebar {
+      width: 280px;
+      background: #05080F;
+      backdrop-filter: blur(2px);
+      border-right: 1px solid #1E2A4A;
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 2rem 1.5rem;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 3rem;
+    }
+
+    .logo-icon {
+      color: #2B7FFF;
+      font-size: 32px;
+    }
+
+    .logo-icon svg {
+      width: 40px;
+      height: 40px;
+      stroke: #2B7FFF;
+    }
+
+    .logo-text {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #EFF3FF 0%, #2B7FFF 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 18px;
+      border-radius: 16px;
+      font-weight: 500;
+      color: #8E9ACF;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .nav-item.active {
+      background: #0F1628;
+      color: #2B7FFF;
+      box-shadow: 0 0 0 1px #1E2A4A;
+    }
+
+    .nav-item:hover:not(.active) {
+      background: #0C1122;
+      color: #B8C4FF;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 2rem;
+    }
+
+    .version-badge {
+      font-size: 0.75rem;
+      color: #4A5B8C;
+      background: #0C1122;
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 40px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ========== MAIN CONTENT ========== */
+    .main-content {
+      flex: 1;
+      padding: 2rem 2.5rem;
+      overflow-y: auto;
+    }
+
+    /* Flash messages */
+    .flash-container {
+      margin-bottom: 2rem;
+    }
+
+    .flash {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 1rem 1.5rem;
+      border-radius: 20px;
+      background: #0F1628;
+      border-left: 5px solid;
+      font-weight: 500;
+    }
+
+    .flash svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .flash-success {
+      border-left-color: #2B7FFF;
+      background: #0F1628;
+      color: #B8E1FF;
+    }
+
+    .flash-error {
+      border-left-color: #FF4D6D;
+      background: #1E1426;
+      color: #FFB3C1;
+    }
+
+    /* Header */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    .page-title {
+      font-size: 2.2rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #FFFFFF, #2B7FFF);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.3px;
+    }
+
+    .page-subtitle {
+      color: #8E9ACF;
+      margin-top: 6px;
+      font-size: 1rem;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid #2B7FFF;
+      color: #2B7FFF;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-weight: 500;
+      transition: 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(43, 127, 255, 0.1);
+      border-color: #5A9EFF;
+      color: #5A9EFF;
+    }
+
+    /* Form Card */
+    .form-card {
+      background: #080C1A;
+      border-radius: 32px;
+      border: 1px solid #1E2A4A;
+      padding: 2rem 2.2rem;
+      box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(2px);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.8rem 2rem;
+    }
+
+    .full-width {
+      grid-column: span 2;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-label {
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #C6D0FF;
+      letter-spacing: 0.2px;
+    }
+
+    .label-icon {
+      width: 18px;
+      height: 18px;
+      stroke: #2B7FFF;
+    }
+
+    .unit {
+      font-weight: 400;
+      font-size: 0.7rem;
+      color: #5F6F9E;
+      margin-left: 4px;
+    }
+
+    .form-input {
+      background: #0A0F1F;
+      border: 1px solid #212D4F;
+      border-radius: 20px;
+      padding: 12px 18px;
+      font-size: 1rem;
+      color: #F0F3FF;
+      transition: all 0.2s;
+      font-family: 'DM Sans', monospace;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #2B7FFF;
+      box-shadow: 0 0 0 3px rgba(43, 127, 255, 0.2);
+    }
+
+    /* radio group */
+    .radio-group {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .radio-card {
+      background: #0A0F1F;
+      border: 1px solid #212D4F;
+      border-radius: 40px;
+      padding: 8px 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+
+    .radio-card:has(input:checked) {
+      background: #2B7FFF;
+      border-color: #2B7FFF;
+      color: #FFFFFF;
+      box-shadow: 0 4px 12px rgba(43, 127, 255, 0.3);
+    }
+
+    .radio-card input {
+      display: none;
+    }
+
+    /* slider */
+    .input-with-slider {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .slider {
+      -webkit-appearance: none;
+      background: #111827;
+      height: 5px;
+      border-radius: 10px;
+      outline: none;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      background: #2B7FFF;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 6px #2B7FFF;
+      border: none;
+    }
+
+    /* stress scale */
+    .stress-scale {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .stress-btn {
+      background: #0A0F1F;
+      border: 1px solid #29365C;
+      border-radius: 50px;
+      padding: 8px 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+      min-width: 48px;
+    }
+
+    .stress-btn.active {
+      background: #2B7FFF;
+      border-color: #2B7FFF;
+      color: #FFFFFF;
+      box-shadow: 0 0 10px rgba(43, 127, 255, 0.6);
+    }
+
+    .stress-btn input {
+      display: none;
+    }
+
+    /* BMI preview */
+    .bmi-preview {
+      background: #0A1020;
+      border-radius: 24px;
+      padding: 1rem 1.5rem;
+      border: 1px solid #212D4F;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .bmi-preview-label {
+      font-size: 0.85rem;
+      color: #7D8CBA;
+    }
+
+    .bmi-value {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: 'Space Mono', monospace;
+      color: #2B7FFF;
+    }
+
+    .bmi-category {
+      background: #0F1628;
+      padding: 4px 14px;
+      border-radius: 60px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    /* Form actions */
+    .form-actions {
+      margin-top: 2.5rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 16px;
+      border-top: 1px solid #1E2A4A;
+      padding-top: 1.8rem;
+    }
+
+    .btn {
+      padding: 12px 28px;
+      border-radius: 50px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      border: none;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(95deg, #2B7FFF, #1A5FD9);
+      color: white;
+      box-shadow: 0 5px 14px rgba(43, 127, 255, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(95deg, #3D8FFF, #2B6FEF);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(43, 127, 255, 0.4);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid #2B7FFF;
+      color: #2B7FFF;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(43, 127, 255, 0.08);
+    }
+
+    .form-error {
+      font-size: 0.7rem;
+      color: #FF6B8B;
+      min-height: 20px;
+    }
+
+    @media (max-width: 800px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .full-width {
+        grid-column: span 1;
+      }
+      .sidebar {
+        width: 80px;
+        padding: 1rem 0.5rem;
+      }
+      .logo-text, .nav-item span, .sidebar-footer .version-badge {
+        display: none;
+      }
+      .sidebar-logo {
+        justify-content: center;
+      }
+      .nav-item {
+        justify-content: center;
+      }
+      .main-content {
+        padding: 1rem;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<!-- ── Sidebar ─────────────────────────────────────────── -->
+<!-- ── Sidebar (Bleu/Noir) ─────────────────────────────────────────── -->
 <aside class="sidebar">
   <div class="sidebar-logo">
     <div class="logo-icon">
@@ -26,14 +478,14 @@
   </div>
 
   <nav class="sidebar-nav">
-    <a href="{{ url_for('index') }}" class="nav-item active">
+    <a href="#" class="nav-item active">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
       </svg>
       <span>Saisie</span>
     </a>
-    <a href="{{ url_for('dashboard') }}" class="nav-item">
+    <a href="#" class="nav-item">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
         <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
@@ -50,39 +502,29 @@
 <!-- ── Main ────────────────────────────────────────────── -->
 <main class="main-content">
 
-  <!-- Flash messages -->
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div class="flash-container">
-        {% for category, message in messages %}
-          <div class="flash flash-{{ category }}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              {% if category == 'success' %}
-                <polyline points="20 6 9 17 4 12"/>
-              {% else %}
-                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-              {% endif %}
-            </svg>
-            {{ message }}
-          </div>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
+  <!-- Flash messages (demo dynamique possible) -->
+  <div class="flash-container" id="flashDemo" style="display: none;">
+    <div class="flash flash-success">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      Données simulées — Interface bleu/noir prête.
+    </div>
+  </div>
 
   <header class="page-header">
     <div>
       <h1 class="page-title">Nouvelle entrée</h1>
       <p class="page-subtitle">Renseignez vos données de santé du jour</p>
     </div>
-    <a href="{{ url_for('dashboard') }}" class="btn btn-ghost">
+    <a href="#" class="btn-ghost">
       Voir le dashboard →
     </a>
   </header>
 
   <!-- Form Card -->
   <div class="form-card">
-    <form id="healthForm" method="POST" action="{{ url_for('index') }}" novalidate>
+    <form id="healthForm" method="POST" action="#" novalidate>
 
       <div class="form-grid">
 
@@ -96,7 +538,7 @@
           </label>
           <input type="number" id="age" name="age" class="form-input"
                  min="1" max="120" placeholder="25"
-                 value="{{ form_data.get('age', '') }}" required />
+                 value="28" required />
           <span class="form-error" id="ageError"></span>
         </div>
 
@@ -109,13 +551,15 @@
             Genre
           </label>
           <div class="radio-group">
-            {% for val, label in [('M','Homme'), ('F','Femme'), ('Other','Autre')] %}
-            <label class="radio-card {% if form_data.get('gender') == val %}checked{% endif %}">
-              <input type="radio" name="gender" value="{{ val }}"
-                     {% if form_data.get('gender') == val %}checked{% endif %} />
-              {{ label }}
+            <label class="radio-card">
+              <input type="radio" name="gender" value="M" checked/> Homme
             </label>
-            {% endfor %}
+            <label class="radio-card">
+              <input type="radio" name="gender" value="F" /> Femme
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="gender" value="Other" /> Autre
+            </label>
           </div>
           <span class="form-error" id="genderError"></span>
         </div>
@@ -130,10 +574,8 @@
           </label>
           <div class="input-with-slider">
             <input type="number" id="activity" name="activity" class="form-input"
-                   min="0" max="1440" placeholder="60"
-                   value="{{ form_data.get('activity', '') }}" required />
-            <input type="range" id="activitySlider" min="0" max="300" step="5"
-                   value="{{ form_data.get('activity', 60) }}" class="slider" />
+                   min="0" max="1440" placeholder="60" value="45" required />
+            <input type="range" id="activitySlider" min="0" max="300" step="5" value="45" class="slider" />
           </div>
           <span class="form-error" id="activityError"></span>
         </div>
@@ -148,10 +590,8 @@
           </label>
           <div class="input-with-slider">
             <input type="number" id="sleep" name="sleep" class="form-input"
-                   min="0" max="24" step="0.5" placeholder="7.5"
-                   value="{{ form_data.get('sleep', '') }}" required />
-            <input type="range" id="sleepSlider" min="0" max="12" step="0.5"
-                   value="{{ form_data.get('sleep', 7) }}" class="slider" />
+                   min="0" max="24" step="0.5" placeholder="7.5" value="7" required />
+            <input type="range" id="sleepSlider" min="0" max="12" step="0.5" value="7" class="slider" />
           </div>
           <span class="form-error" id="sleepError"></span>
         </div>
@@ -164,15 +604,8 @@
             </svg>
             Niveau de stress <span class="unit">(1 = calme · 10 = très stressé)</span>
           </label>
-          <div class="stress-scale">
-            {% for i in range(1, 11) %}
-            <label class="stress-btn {% if form_data.get('stress')|int == i %}active{% endif %}"
-                   data-level="{{ i }}">
-              <input type="radio" name="stress" value="{{ i }}"
-                     {% if form_data.get('stress')|int == i %}checked{% endif %} />
-              {{ i }}
-            </label>
-            {% endfor %}
+          <div class="stress-scale" id="stressScale">
+            <!-- JS va gérer l'activation et les valeurs -->
           </div>
           <span class="form-error" id="stressError"></span>
         </div>
@@ -186,8 +619,7 @@
             Poids <span class="unit">(kg)</span>
           </label>
           <input type="number" id="weight" name="weight" class="form-input"
-                 min="20" max="300" step="0.1" placeholder="70"
-                 value="{{ form_data.get('weight', '') }}" required />
+                 min="20" max="300" step="0.1" placeholder="70" value="72.5" required />
           <span class="form-error" id="weightError"></span>
         </div>
 
@@ -200,8 +632,7 @@
             Taille <span class="unit">(m)</span>
           </label>
           <input type="number" id="height" name="height" class="form-input"
-                 min="0.5" max="2.5" step="0.01" placeholder="1.75"
-                 value="{{ form_data.get('height', '') }}" required />
+                 min="0.5" max="2.5" step="0.01" placeholder="1.75" value="1.78" required />
           <span class="form-error" id="heightError"></span>
         </div>
 
@@ -217,7 +648,7 @@
       </div><!-- .form-grid -->
 
       <div class="form-actions">
-        <button type="reset" class="btn btn-ghost" onclick="resetBMI()">Réinitialiser</button>
+        <button type="reset" class="btn btn-ghost" id="resetBtn">Réinitialiser</button>
         <button type="submit" class="btn btn-primary" id="submitBtn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
@@ -231,6 +662,180 @@
 
 </main>
 
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+  // ---------- Couleurs Bleu/Noir - Style amélioré, toutes les interactions ----------
+  // Gestion slider sync
+  const activityInput = document.getElementById('activity');
+  const activitySlider = document.getElementById('activitySlider');
+  const sleepInput = document.getElementById('sleep');
+  const sleepSlider = document.getElementById('sleepSlider');
+
+  function syncActivity(value) {
+    activityInput.value = value;
+    activitySlider.value = value;
+  }
+  activityInput.addEventListener('input', (e) => syncActivity(e.target.value));
+  activitySlider.addEventListener('input', (e) => syncActivity(e.target.value));
+
+  function syncSleep(value) {
+    sleepInput.value = value;
+    sleepSlider.value = value;
+  }
+  sleepInput.addEventListener('input', (e) => syncSleep(e.target.value));
+  sleepSlider.addEventListener('input', (e) => syncSleep(e.target.value));
+
+  // Stress scale dynamique (bleu)
+  const stressContainer = document.getElementById('stressScale');
+  let currentStress = 3;
+  function buildStressScale(selectedVal) {
+    stressContainer.innerHTML = '';
+    for (let i = 1; i <= 10; i++) {
+      const btn = document.createElement('label');
+      btn.className = 'stress-btn' + (selectedVal == i ? ' active' : '');
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'stress';
+      radio.value = i;
+      if (selectedVal == i) radio.checked = true;
+      radio.style.display = 'none';
+      btn.appendChild(radio);
+      btn.appendChild(document.createTextNode(i));
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.stress-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        radio.checked = true;
+        currentStress = i;
+      });
+      stressContainer.appendChild(btn);
+    }
+  }
+  buildStressScale(3);
+
+  // IMC calculation
+  const weightInput = document.getElementById('weight');
+  const heightInput = document.getElementById('height');
+  const bmiValueSpan = document.getElementById('bmiValue');
+  const bmiCategorySpan = document.getElementById('bmiCategory');
+
+  function updateBMI() {
+    const weight = parseFloat(weightInput.value);
+    const height = parseFloat(heightInput.value);
+    if (!isNaN(weight) && !isNaN(height) && height > 0 && weight > 0) {
+      const bmi = weight / (height * height);
+      const bmiRounded = bmi.toFixed(1);
+      bmiValueSpan.innerText = bmiRounded;
+      let category = '';
+      if (bmi < 18.5) category = 'Insuffisance pondérale';
+      else if (bmi < 25) category = 'Poids normal ⚡';
+      else if (bmi < 30) category = 'Surpoids';
+      else category = 'Obésité';
+      bmiCategorySpan.innerText = category;
+      bmiCategorySpan.style.color = '#8AB6FF';
+    } else {
+      bmiValueSpan.innerText = '—';
+      bmiCategorySpan.innerText = '';
+    }
+  }
+
+  weightInput.addEventListener('input', updateBMI);
+  heightInput.addEventListener('input', updateBMI);
+  updateBMI();
+
+  // validation basique et simulation d'enregistrement (message flash bleu)
+  const form = document.getElementById('healthForm');
+  const flashDemoDiv = document.getElementById('flashDemo');
+
+  function showFlashMessage(message, isSuccess = true) {
+    const container = document.querySelector('.flash-container');
+    if (!container) return;
+    container.style.display = 'block';
+    container.innerHTML = `
+      <div class="flash flash-${isSuccess ? 'success' : 'error'}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          ${isSuccess ? '<polyline points="20 6 9 17 4 12"/>' : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}
+        </svg>
+        ${message}
+      </div>
+    `;
+    setTimeout(() => {
+      if(container.firstChild) container.style.display = 'none';
+    }, 3500);
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    // Validations simples
+    let valid = true;
+    const age = document.getElementById('age').value;
+    const activity = document.getElementById('activity').value;
+    const sleep = document.getElementById('sleep').value;
+    const weight = document.getElementById('weight').value;
+    const height = document.getElementById('height').value;
+    const genderRadios = document.querySelectorAll('input[name="gender"]');
+    let genderSelected = false;
+    genderRadios.forEach(r => { if(r.checked) genderSelected = true; });
+    const stressRad = document.querySelector('input[name="stress"]:checked');
+    
+    if (!age || age < 1 || age > 120) { document.getElementById('ageError').innerText = 'Âge invalide (1-120)'; valid = false; }
+    else document.getElementById('ageError').innerText = '';
+    if (!genderSelected) { document.getElementById('genderError').innerText = 'Veuillez sélectionner un genre'; valid = false; }
+    else document.getElementById('genderError').innerText = '';
+    if (!activity || activity < 0) { document.getElementById('activityError').innerText = 'Activité min. valide requise'; valid = false; }
+    else document.getElementById('activityError').innerText = '';
+    if (!sleep || sleep < 0 || sleep > 24) { document.getElementById('sleepError').innerText = 'Sommeil entre 0 et 24h'; valid = false; }
+    else document.getElementById('sleepError').innerText = '';
+    if (!stressRad) { document.getElementById('stressError').innerText = 'Choisissez un niveau de stress'; valid = false; }
+    else document.getElementById('stressError').innerText = '';
+    if (!weight || weight < 20 || weight > 300) { document.getElementById('weightError').innerText = 'Poids entre 20 et 300 kg'; valid = false; }
+    else document.getElementById('weightError').innerText = '';
+    if (!height || height < 0.5 || height > 2.5) { document.getElementById('heightError').innerText = 'Taille entre 0.5 et 2.5 m'; valid = false; }
+    else document.getElementById('heightError').innerText = '';
+
+    if(valid) {
+      showFlashMessage('Données enregistrées avec succès ! (simulation bleu/noir)', true);
+      // Optionnel : afficher dans la console
+      console.log({
+        age, gender: document.querySelector('input[name="gender"]:checked')?.value,
+        activity, sleep, stress: stressRad?.value, weight, height,
+        bmi: bmiValueSpan.innerText
+      });
+    } else {
+      showFlashMessage('Corrigez les erreurs dans le formulaire', false);
+    }
+  });
+
+  // Réinitialisation manuelle (reset du formulaire + IMC reset)
+  const resetBtn = document.getElementById('resetBtn');
+  function resetFormCustom() {
+    form.reset();
+    document.getElementById('age').value = '';
+    document.getElementById('activity').value = '';
+    document.getElementById('sleep').value = '';
+    document.getElementById('weight').value = '';
+    document.getElementById('height').value = '';
+    activitySlider.value = 0;
+    sleepSlider.value = 0;
+    const firstGender = document.querySelector('input[name="gender"][value="M"]');
+    if(firstGender) firstGender.checked = true;
+    buildStressScale(3);
+    updateBMI();
+    document.querySelectorAll('.form-error').forEach(e => e.innerText = '');
+    showFlashMessage('Formulaire réinitialisé', true);
+  }
+  resetBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    resetFormCustom();
+  });
+  // initialiser sliders et stress par défaut cohérent
+  syncActivity(45);
+  syncSleep(7);
+  buildStressScale(3);
+  updateBMI();
+
+  // petite animation d'accueil flash
+  setTimeout(() => {
+    showFlashMessage('Interface PulsePilot · Dark Blue & Noir', true);
+  }, 200);
+</script>
 </body>
 </html>
