@@ -7,563 +7,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-  <style>
-    /* ---------- BASE : BLEU & NOIR ---------- */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: #0B0F1C;
-      color: #EFF3FF;
-      display: flex;
-      min-height: 100vh;
-    }
-
-    /* ========== SIDEBAR STYLES ========== */
-    .sidebar {
-      width: 280px;
-      background: #05080F;
-      backdrop-filter: blur(2px);
-      border-right: 1px solid #1E2A4A;
-      display: flex;
-      flex-direction: column;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      padding: 2rem 1.5rem;
-    }
-
-    .sidebar-logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 2.5rem;
-    }
-
-    .logo-icon {
-      color: #2B7FFF;
-    }
-
-    .logo-icon svg {
-      width: 40px;
-      height: 40px;
-      stroke: #2B7FFF;
-    }
-
-    .logo-text {
-      font-size: 1.8rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, #EFF3FF 0%, #2B7FFF 100%);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-      letter-spacing: -0.5px;
-    }
-
-    .sidebar-nav {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 2rem;
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 12px 18px;
-      border-radius: 16px;
-      font-weight: 500;
-      color: #8E9ACF;
-      transition: all 0.2s ease;
-      text-decoration: none;
-    }
-
-    .nav-item svg {
-      width: 22px;
-      height: 22px;
-    }
-
-    .nav-item.active {
-      background: #0F1628;
-      color: #2B7FFF;
-      box-shadow: 0 0 0 1px #1E2A4A;
-    }
-
-    .nav-item:hover:not(.active) {
-      background: #0C1122;
-      color: #B8C4FF;
-    }
-
-    .sidebar-stats {
-      background: #0A1020;
-      border-radius: 20px;
-      padding: 1rem;
-      margin: 1rem 0;
-      border: 1px solid #1E2A4A;
-    }
-
-    .sidebar-stat {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px solid #162033;
-    }
-
-    .sidebar-stat:last-child {
-      border-bottom: none;
-    }
-
-    .ss-label {
-      font-size: 0.8rem;
-      color: #7D8CBA;
-    }
-
-    .ss-value {
-      font-weight: 700;
-      color: #2B7FFF;
-      font-family: 'Space Mono', monospace;
-    }
-
-    .ss-value small {
-      font-size: 0.7rem;
-      color: #5F6F9E;
-    }
-
-    .sidebar-footer {
-      margin-top: auto;
-      padding-top: 1.5rem;
-    }
-
-    .version-badge {
-      font-size: 0.75rem;
-      color: #4A5B8C;
-      background: #0C1122;
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 40px;
-    }
-
-    /* ========== MAIN CONTENT ========== */
-    .main-content {
-      flex: 1;
-      padding: 2rem 2.5rem;
-      overflow-y: auto;
-    }
-
-    /* Flash messages */
-    .flash-container {
-      margin-bottom: 2rem;
-    }
-
-    .flash {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 1rem 1.5rem;
-      border-radius: 20px;
-      background: #0F1628;
-      border-left: 5px solid;
-      font-weight: 500;
-    }
-
-    .flash-success {
-      border-left-color: #2B7FFF;
-      background: #0F1628;
-      color: #B8E1FF;
-    }
-
-    .flash-error {
-      border-left-color: #FF4D6D;
-      background: #1E1426;
-      color: #FFB3C1;
-    }
-
-    /* Header */
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
-    }
-
-    .page-title {
-      font-size: 2.2rem;
-      font-weight: 600;
-      background: linear-gradient(135deg, #FFFFFF, #2B7FFF);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-
-    .page-subtitle {
-      color: #8E9ACF;
-      margin-top: 6px;
-    }
-
-    .btn {
-      padding: 10px 24px;
-      border-radius: 40px;
-      font-weight: 600;
-      text-decoration: none;
-      transition: 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-primary {
-      background: linear-gradient(95deg, #2B7FFF, #1A5FD9);
-      color: white;
-      box-shadow: 0 4px 12px rgba(43, 127, 255, 0.3);
-    }
-
-    .btn-primary:hover {
-      background: linear-gradient(95deg, #3D8FFF, #2B6FEF);
-      transform: translateY(-2px);
-    }
-
-    /* Empty state */
-    .empty-state {
-      text-align: center;
-      padding: 4rem 2rem;
-      background: #080C1A;
-      border-radius: 32px;
-      border: 1px solid #1E2A4A;
-    }
-
-    .empty-icon svg {
-      width: 80px;
-      height: 80px;
-      stroke: #2B7FFF;
-      margin-bottom: 1.5rem;
-    }
-
-    /* KPI Cards */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-
-    .kpi-card {
-      background: #080C1A;
-      border-radius: 24px;
-      padding: 1.2rem 1.5rem;
-      display: flex;
-      gap: 1rem;
-      border: 1px solid #1E2A4A;
-      transition: 0.2s;
-    }
-
-    .kpi-card:hover {
-      border-color: #2B7FFF;
-      background: #0A1022;
-    }
-
-    .kpi-icon svg {
-      width: 44px;
-      height: 44px;
-      stroke: #2B7FFF;
-    }
-
-    .kpi-body {
-      flex: 1;
-    }
-
-    .kpi-label {
-      font-size: 0.8rem;
-      color: #8E9ACF;
-      letter-spacing: 0.3px;
-    }
-
-    .kpi-value {
-      font-size: 2rem;
-      font-weight: 700;
-      font-family: 'Space Mono', monospace;
-      color: #FFFFFF;
-    }
-
-    .kpi-unit {
-      font-size: 0.8rem;
-      font-weight: 400;
-      color: #5F6F9E;
-    }
-
-    .kpi-range {
-      font-size: 0.7rem;
-      color: #6C7CA8;
-      margin-top: 4px;
-    }
-
-    /* Prediction card */
-    .prediction-card {
-      background: linear-gradient(135deg, #0A1020, #05080F);
-      border: 1px solid #2B7FFF;
-      border-radius: 28px;
-      margin-bottom: 2rem;
-      overflow: hidden;
-    }
-
-    .prediction-header {
-      background: #0F1628;
-      padding: 0.8rem 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 600;
-      border-bottom: 1px solid #1E2A4A;
-    }
-
-    .prediction-header svg {
-      width: 20px;
-      height: 20px;
-      stroke: #2B7FFF;
-    }
-
-    .prediction-body {
-      padding: 1.5rem;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .prediction-formula {
-      font-family: 'Space Mono', monospace;
-      background: #0C1122;
-      padding: 8px 16px;
-      border-radius: 40px;
-      font-size: 0.9rem;
-    }
-
-    .prediction-result {
-      background: #0F1628;
-      padding: 8px 20px;
-      border-radius: 60px;
-    }
-
-    .pred-label {
-      color: #8E9ACF;
-    }
-
-    .pred-value {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #2B7FFF;
-      margin-left: 10px;
-    }
-
-    /* Charts grid */
-    .charts-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-
-    .chart-card {
-      background: #080C1A;
-      border: 1px solid #1E2A4A;
-      border-radius: 28px;
-      padding: 1.2rem;
-    }
-
-    .chart-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid #1E2A4A;
-    }
-
-    .chart-card-header h3 {
-      font-size: 1rem;
-      font-weight: 500;
-    }
-
-    .chart-badge {
-      font-size: 0.7rem;
-      background: #0F1628;
-      padding: 4px 12px;
-      border-radius: 30px;
-      color: #2B7FFF;
-    }
-
-    .chart-wrapper {
-      position: relative;
-      height: 280px;
-    }
-
-    canvas {
-      max-height: 100%;
-      width: 100%;
-    }
-
-    /* Table */
-    .table-card {
-      background: #080C1A;
-      border: 1px solid #1E2A4A;
-      border-radius: 28px;
-      overflow: hidden;
-    }
-
-    .table-header {
-      padding: 1rem 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #1E2A4A;
-    }
-
-    .record-count {
-      font-size: 0.8rem;
-      background: #0F1628;
-      padding: 4px 12px;
-      border-radius: 30px;
-    }
-
-    .table-wrapper {
-      overflow-x: auto;
-    }
-
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
-    }
-
-    .data-table th {
-      text-align: left;
-      padding: 1rem 1rem;
-      background: #0C1122;
-      color: #8E9ACF;
-      font-weight: 500;
-    }
-
-    .data-table td {
-      padding: 0.9rem 1rem;
-      border-bottom: 1px solid #162033;
-      color: #D9E2FF;
-    }
-
-    .data-table tr:hover {
-      background: #0F1628;
-    }
-
-    .gender-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 40px;
-      font-size: 0.7rem;
-      font-weight: 500;
-    }
-
-    .gender-m {
-      background: #1E3A5F;
-      color: #7FB7FF;
-    }
-
-    .gender-f {
-      background: #3D1F5C;
-      color: #C88FFF;
-    }
-
-    .gender-other {
-      background: #2A2F4F;
-      color: #A5B9FF;
-    }
-
-    .stress-dot {
-      display: inline-block;
-      width: 36px;
-      text-align: center;
-      background: #1E2A4A;
-      border-radius: 30px;
-      font-weight: 600;
-    }
-
-    .bmi-badge {
-      font-size: 0.7rem;
-      padding: 4px 10px;
-      border-radius: 30px;
-    }
-
-    .bmi-normal {
-      background: #0E4F3A;
-      color: #7FE0C0;
-    }
-
-    .bmi-surpoids {
-      background: #5C3E1A;
-      color: #FFCF8A;
-    }
-
-    .bmi-obésité {
-      background: #691C2C;
-      color: #FF9EAD;
-    }
-
-    .td-hr {
-      font-family: 'Space Mono', monospace;
-      font-weight: 700;
-    }
-
-    .btn-delete {
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 6px;
-      border-radius: 12px;
-      color: #FF6B8B;
-      transition: 0.2s;
-    }
-
-    .btn-delete svg {
-      width: 18px;
-      height: 18px;
-    }
-
-    .btn-delete:hover {
-      background: #1E1426;
-      color: #FF4D6D;
-    }
-
-    @media (max-width: 800px) {
-      .sidebar {
-        width: 80px;
-        padding: 1rem 0.5rem;
-      }
-      .logo-text, .nav-item span, .sidebar-stats, .sidebar-footer .version-badge {
-        display: none;
-      }
-      .sidebar-logo {
-        justify-content: center;
-      }
-      .nav-item {
-        justify-content: center;
-      }
-      .main-content {
-        padding: 1rem;
-      }
-      .charts-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
 </head>
 <body>
 
-<!-- ── Sidebar (Bleu/Noir) ─────────────────────────────────────────── -->
+<!-- ── Sidebar ─────────────────────────────────────────── -->
 <aside class="sidebar">
   <div class="sidebar-logo">
     <div class="logo-icon">
@@ -578,14 +27,14 @@
   </div>
 
   <nav class="sidebar-nav">
-    <a href="#" class="nav-item">
+    <a href="{{ url_for('index') }}" class="nav-item">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
       </svg>
       <span>Saisie</span>
     </a>
-    <a href="#" class="nav-item active">
+    <a href="{{ url_for('dashboard') }}" class="nav-item active">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
         <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
@@ -598,15 +47,15 @@
   <div class="sidebar-stats">
     <div class="sidebar-stat">
       <span class="ss-label">Entrées</span>
-      <span class="ss-value" id="sideCount">12</span>
+      <span class="ss-value">{{ stats.count }}</span>
     </div>
     <div class="sidebar-stat">
       <span class="ss-label">Moy. FC</span>
-      <span class="ss-value" id="sideAvgHr">72 <small>bpm</small></span>
+      <span class="ss-value">{{ stats.avg_hr }} <small>bpm</small></span>
     </div>
     <div class="sidebar-stat">
       <span class="ss-label">Moy. IMC</span>
-      <span class="ss-value" id="sideAvgBmi">23.5</span>
+      <span class="ss-value">{{ stats.avg_bmi }}</span>
     </div>
   </div>
 
@@ -618,306 +67,203 @@
 <!-- ── Main ────────────────────────────────────────────── -->
 <main class="main-content">
 
-  <div class="flash-container" id="flashContainer" style="display: none;"></div>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-container">
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
 
   <header class="page-header">
     <div>
       <h1 class="page-title">Dashboard santé</h1>
-      <p class="page-subtitle" id="recordSummary">12 enregistrements analysés</p>
+      <p class="page-subtitle">{{ stats.count }} enregistrement{{ 's' if stats.count != 1 }} analysé{{ 's' if stats.count != 1 }}</p>
     </div>
-    <a href="#" class="btn btn-primary">
+    <a href="{{ url_for('index') }}" class="btn btn-primary">
       + Nouvelle entrée
     </a>
   </header>
 
-  <!-- Données mockées pour démo bleu/noir -->
-  <div id="dashboardContent">
-    <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-          </svg>
-        </div>
-        <div class="kpi-body">
-          <div class="kpi-label">Fréquence cardiaque moy.</div>
-          <div class="kpi-value" id="kpiAvgHr">72 <span class="kpi-unit">bpm</span></div>
-          <div class="kpi-range" id="kpiRangeHr">62 – 85 bpm</div>
-        </div>
-      </div>
-
-      <div class="kpi-card">
-        <div class="kpi-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-          </svg>
-        </div>
-        <div class="kpi-body">
-          <div class="kpi-label">Activité physique moy.</div>
-          <div class="kpi-value" id="kpiAvgAct">48 <span class="kpi-unit">min/j</span></div>
-        </div>
-      </div>
-
-      <div class="kpi-card">
-        <div class="kpi-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-          </svg>
-        </div>
-        <div class="kpi-body">
-          <div class="kpi-label">Sommeil moyen</div>
-          <div class="kpi-value" id="kpiAvgSleep">7.2 <span class="kpi-unit">h</span></div>
-        </div>
-      </div>
-
-      <div class="kpi-card">
-        <div class="kpi-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-          </svg>
-        </div>
-        <div class="kpi-body">
-          <div class="kpi-label">IMC moyen</div>
-          <div class="kpi-value" id="kpiAvgBmi">23.6</div>
-        </div>
-      </div>
+  {% if stats.count == 0 %}
+  <!-- Empty state -->
+  <div class="empty-state">
+    <div class="empty-icon">
+      <svg viewBox="0 0 80 80" fill="none">
+        <circle cx="40" cy="40" r="38" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4"/>
+        <polyline points="18,40 28,28 38,50 48,34 58,44 66,38"
+                  stroke="currentColor" stroke-width="3"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
     </div>
+    <h2>Aucune donnée disponible</h2>
+    <p>Ajoutez votre première entrée pour commencer l'analyse.</p>
+    <a href="{{ url_for('index') }}" class="btn btn-primary">Commencer maintenant</a>
+  </div>
 
-    <!-- Prédiction -->
-    <div class="prediction-card">
-      <div class="prediction-header">
+  {% else %}
+
+  <!-- ── KPI Cards ─────────────────────────────────────── -->
+  <div class="kpi-grid">
+    <div class="kpi-card kpi-blue">
+      <div class="kpi-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
         </svg>
-        <span>Prédiction par régression linéaire</span>
       </div>
-      <div class="prediction-body">
-        <div class="prediction-formula">
-          FC = <span id="regA">0.42</span> × activité + <span id="regB">61.3</span>
-        </div>
-        <div class="prediction-result">
-          <span class="pred-label">Pour 60 min/j d'activité :</span>
-          <span class="pred-value" id="predictionValue">86.5 <small>bpm estimés</small></span>
-        </div>
+      <div class="kpi-body">
+        <div class="kpi-label">Fréquence cardiaque moy.</div>
+        <div class="kpi-value">{{ stats.avg_hr }} <span class="kpi-unit">bpm</span></div>
+        <div class="kpi-range">{{ stats.min_hr }} – {{ stats.max_hr }} bpm</div>
       </div>
     </div>
 
-    <div class="charts-grid">
-      <div class="chart-card">
-        <div class="chart-card-header">
-          <h3>Activité vs Rythme cardiaque</h3>
-          <span class="chart-badge">Scatter + Régression</span>
-        </div>
-        <div class="chart-wrapper">
-          <canvas id="scatterChart"></canvas>
-        </div>
+    <div class="kpi-card kpi-green">
+      <div class="kpi-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+        </svg>
       </div>
-      <div class="chart-card">
-        <div class="chart-card-header">
-          <h3>Distribution FC</h3>
-          <span class="chart-badge">Histogramme</span>
-        </div>
-        <div class="chart-wrapper">
-          <canvas id="histChart"></canvas>
-        </div>
+      <div class="kpi-body">
+        <div class="kpi-label">Activité physique moy.</div>
+        <div class="kpi-value">{{ stats.avg_activity }} <span class="kpi-unit">min/j</span></div>
       </div>
     </div>
 
-    <!-- Data Table -->
-    <div class="table-card">
-      <div class="table-header">
-        <h3>Données enregistrées</h3>
-        <span class="record-count" id="tableCount">12 enregistrements</span>
+    <div class="kpi-card kpi-teal">
+      <div class="kpi-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
       </div>
-      <div class="table-wrapper">
-        <table class="data-table" id="dataTable">
-          <thead>
-            <tr><th>#</th><th>Âge</th><th>Genre</th><th>Activité (min)</th><th>Sommeil (h)</th><th>Stress</th><th>Poids (kg)</th><th>Taille (m)</th><th>IMC</th><th>Catégorie</th><th>FC (bpm)</th><th></th></tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
+      <div class="kpi-body">
+        <div class="kpi-label">Sommeil moyen</div>
+        <div class="kpi-value">{{ stats.avg_sleep }} <span class="kpi-unit">h</span></div>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-navy">
+      <div class="kpi-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+      </div>
+      <div class="kpi-body">
+        <div class="kpi-label">IMC moyen</div>
+        <div class="kpi-value">{{ stats.avg_bmi }}</div>
       </div>
     </div>
   </div>
+
+  <!-- ── Prediction Card ───────────────────────────────── -->
+  <div class="prediction-card">
+    <div class="prediction-header">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      </svg>
+      <span>Prédiction par régression linéaire</span>
+    </div>
+    <div class="prediction-body">
+      <div class="prediction-formula">
+        FC = <em>{{ regression.a }}</em> × activité + <em>{{ regression.b }}</em>
+      </div>
+      <div class="prediction-result">
+        <span class="pred-label">Pour {{ regression.at_activity }} min/j d'activité :</span>
+        <span class="pred-value">{{ regression.prediction }} <small>bpm estimés</small></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Charts ────────────────────────────────────────── -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-card-header">
+        <h3>Activité vs Rythme cardiaque</h3>
+        <span class="chart-badge">Scatter + Régression</span>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="scatterChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-card-header">
+        <h3>Distribution FC</h3>
+        <span class="chart-badge">Histogramme</span>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="histChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Data Table ────────────────────────────────────── -->
+  <div class="table-card">
+    <div class="table-header">
+      <h3>Données enregistrées</h3>
+      <span class="record-count">{{ stats.count }} enregistrement{{ 's' if stats.count != 1 }}</span>
+    </div>
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Âge</th>
+            <th>Genre</th>
+            <th>Activité (min)</th>
+            <th>Sommeil (h)</th>
+            <th>Stress</th>
+            <th>Poids (kg)</th>
+            <th>Taille (m)</th>
+            <th>IMC</th>
+            <th>Catégorie</th>
+            <th>FC (bpm)</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in records %}
+          <tr id="row-{{ r.id }}">
+            <td class="td-id">{{ r.id }}</td>
+            <td>{{ r.age }}</td>
+            <td>
+              <span class="gender-badge gender-{{ r.gender|lower }}">{{ r.gender }}</span>
+            </td>
+            <td>{{ r.activity }}</td>
+            <td>{{ r.sleep }}</td>
+            <td>
+              <div class="stress-dot stress-{{ 'low' if r.stress <= 3 else ('mid' if r.stress <= 6 else 'high') }}">
+                {{ r.stress }}
+              </div>
+            </td>
+            <td>{{ r.weight }}</td>
+            <td>{{ r.height }}</td>
+            <td class="td-bmi">{{ r.bmi }}</td>
+            <td>
+              <span class="bmi-badge bmi-{{ r.bmi_category|lower|replace('é','e')|replace(' ','_') }}">
+                {{ r.bmi_category }}
+              </span>
+            </td>
+            <td class="td-hr">{{ r.heart_rate }}</td>
+            <td>
+              <button class="btn-delete" onclick="deleteRecord({{ r.id }})" title="Supprimer">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6m4-6v6"/><path d="M9 6V4h6v2"/>
+                </svg>
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% endif %}
 </main>
 
-<script>
-  // ---------- Données Mockées (style bleu/noir) ----------
-  const mockRecords = [
-    { id: 1, age: 28, gender: 'M', activity: 55, sleep: 7.2, stress: 3, weight: 74, height: 1.78, heart_rate: 72, bmi: 23.4, bmi_category: 'Normal' },
-    { id: 2, age: 34, gender: 'F', activity: 30, sleep: 6.5, stress: 5, weight: 68, height: 1.65, heart_rate: 78, bmi: 25.0, bmi_category: 'Surpoids' },
-    { id: 3, age: 25, gender: 'M', activity: 80, sleep: 8.0, stress: 2, weight: 70, height: 1.75, heart_rate: 65, bmi: 22.9, bmi_category: 'Normal' },
-    { id: 4, age: 45, gender: 'M', activity: 25, sleep: 6.0, stress: 7, weight: 88, height: 1.80, heart_rate: 85, bmi: 27.2, bmi_category: 'Surpoids' },
-    { id: 5, age: 22, gender: 'F', activity: 65, sleep: 7.5, stress: 4, weight: 58, height: 1.62, heart_rate: 75, bmi: 22.1, bmi_category: 'Normal' },
-    { id: 6, age: 39, gender: 'Other', activity: 45, sleep: 7.0, stress: 6, weight: 82, height: 1.76, heart_rate: 80, bmi: 26.5, bmi_category: 'Surpoids' },
-    { id: 7, age: 31, gender: 'F', activity: 70, sleep: 7.8, stress: 3, weight: 64, height: 1.68, heart_rate: 70, bmi: 22.7, bmi_category: 'Normal' },
-    { id: 8, age: 50, gender: 'M', activity: 15, sleep: 5.5, stress: 8, weight: 95, height: 1.77, heart_rate: 89, bmi: 30.3, bmi_category: 'Obésité' },
-    { id: 9, age: 27, gender: 'M', activity: 90, sleep: 8.2, stress: 2, weight: 72, height: 1.82, heart_rate: 63, bmi: 21.7, bmi_category: 'Normal' },
-    { id: 10, age: 33, gender: 'F', activity: 50, sleep: 7.1, stress: 4, weight: 66, height: 1.63, heart_rate: 76, bmi: 24.8, bmi_category: 'Normal' },
-    { id: 11, age: 41, gender: 'M', activity: 38, sleep: 6.8, stress: 5, weight: 85, height: 1.74, heart_rate: 82, bmi: 28.1, bmi_category: 'Surpoids' },
-    { id: 12, age: 29, gender: 'F', activity: 60, sleep: 7.4, stress: 3, weight: 62, height: 1.70, heart_rate: 71, bmi: 21.5, bmi_category: 'Normal' }
-  ];
-
-  // Calcul stats
-  function computeStats(records) {
-    const hrVals = records.map(r => r.heart_rate);
-    const avgHr = (hrVals.reduce((a,b)=>a+b,0)/hrVals.length).toFixed(1);
-    const minHr = Math.min(...hrVals);
-    const maxHr = Math.max(...hrVals);
-    const avgActivity = (records.reduce((s,r)=>s+r.activity,0)/records.length).toFixed(1);
-    const avgSleep = (records.reduce((s,r)=>s+r.sleep,0)/records.length).toFixed(1);
-    const avgBmi = (records.reduce((s,r)=>s+r.bmi,0)/records.length).toFixed(1);
-    return { avgHr, minHr, maxHr, avgActivity, avgSleep, avgBmi, count: records.length };
-  }
-
-  // Régression linéaire (activité -> FC)
-  function linearRegression(records) {
-    const n = records.length;
-    let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
-    for (let r of records) {
-      let x = r.activity;
-      let y = r.heart_rate;
-      sumX += x;
-      sumY += y;
-      sumXY += x*y;
-      sumX2 += x*x;
-    }
-    const denominator = (n * sumX2 - sumX*sumX);
-    let a = 0, b = 0;
-    if (denominator !== 0) {
-      a = (n * sumXY - sumX * sumY) / denominator;
-      b = (sumY - a * sumX) / n;
-    } else {
-      a = 0; b = sumY/n;
-    }
-    return { a: a.toFixed(2), b: b.toFixed(1) };
-  }
-
-  function refreshDashboard() {
-    const records = mockRecords;
-    const stats = computeStats(records);
-    const reg = linearRegression(records);
-    const predAt = 60;
-    const predVal = (parseFloat(reg.a) * predAt + parseFloat(reg.b)).toFixed(1);
-
-    // Mettre à jour l'UI
-    document.getElementById('sideCount').innerText = stats.count;
-    document.getElementById('sideAvgHr').innerHTML = `${stats.avgHr} <small>bpm</small>`;
-    document.getElementById('sideAvgBmi').innerText = stats.avgBmi;
-    document.getElementById('recordSummary').innerText = `${stats.count} enregistrement${stats.count>1?'s':''} analysé${stats.count>1?'s':''}`;
-    document.getElementById('kpiAvgHr').innerHTML = `${stats.avgHr} <span class="kpi-unit">bpm</span>`;
-    document.getElementById('kpiRangeHr').innerText = `${stats.minHr} – ${stats.maxHr} bpm`;
-    document.getElementById('kpiAvgAct').innerHTML = `${stats.avgActivity} <span class="kpi-unit">min/j</span>`;
-    document.getElementById('kpiAvgSleep').innerHTML = `${stats.avgSleep} <span class="kpi-unit">h</span>`;
-    document.getElementById('kpiAvgBmi').innerText = stats.avgBmi;
-    document.getElementById('regA').innerText = reg.a;
-    document.getElementById('regB').innerText = reg.b;
-    document.getElementById('predictionValue').innerHTML = `${predVal} <small>bpm estimés</small>`;
-    document.getElementById('tableCount').innerText = `${stats.count} enregistrement${stats.count>1?'s':''}`;
-
-    // Remplir le tableau
-    const tbody = document.getElementById('tableBody');
-    tbody.innerHTML = '';
-    records.forEach(r => {
-      const row = tbody.insertRow();
-      row.id = `row-${r.id}`;
-      row.insertCell(0).innerText = r.id;
-      row.insertCell(1).innerText = r.age;
-      row.insertCell(2).innerHTML = `<span class="gender-badge gender-${r.gender.toLowerCase()}">${r.gender}</span>`;
-      row.insertCell(3).innerText = r.activity;
-      row.insertCell(4).innerText = r.sleep;
-      row.insertCell(5).innerHTML = `<div class="stress-dot">${r.stress}</div>`;
-      row.insertCell(6).innerText = r.weight;
-      row.insertCell(7).innerText = r.height;
-      row.insertCell(8).innerText = r.bmi;
-      let catClass = '';
-      if (r.bmi_category === 'Normal') catClass = 'bmi-normal';
-      else if (r.bmi_category === 'Surpoids') catClass = 'bmi-surpoids';
-      else if (r.bmi_category === 'Obésité') catClass = 'bmi-obésité';
-      else catClass = 'bmi-normal';
-      row.insertCell(9).innerHTML = `<span class="bmi-badge ${catClass}">${r.bmi_category}</span>`;
-      row.insertCell(10).innerHTML = `<span class="td-hr">${r.heart_rate}</span>`;
-      const delBtn = document.createElement('button');
-      delBtn.className = 'btn-delete';
-      delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6m4-6v6"/><path d="M9 6V4h6v2"/></svg>';
-      delBtn.onclick = (function(id){ return function(){ deleteMockRecord(id); }; })(r.id);
-      const cell = row.insertCell(11);
-      cell.appendChild(delBtn);
-    });
-
-    // Mettre à jour les graphiques
-    updateCharts(records, reg);
-  }
-
-  function deleteMockRecord(id) {
-    const index = mockRecords.findIndex(r => r.id === id);
-    if (index !== -1) {
-      mockRecords.splice(index, 1);
-      refreshDashboard();
-      showFlash('Entrée supprimée (mode démo)', true);
-    }
-  }
-
-  function showFlash(msg, success=true) {
-    const container = document.getElementById('flashContainer');
-    container.style.display = 'block';
-    container.innerHTML = `<div class="flash flash-${success ? 'success' : 'error'}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${success ? '<polyline points="20 6 9 17 4 12"/>' : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}</svg>
-      ${msg}
-    </div>`;
-    setTimeout(() => { container.style.display = 'none'; }, 3000);
-  }
-
-  let scatterChart, histChart;
-
-  function updateCharts(records, reg) {
-    const scatterCtx = document.getElementById('scatterChart').getContext('2d');
-    const histCtx = document.getElementById('histChart').getContext('2d');
-
-    // Scatter data
-    const points = records.map(r => ({x: r.activity, y: r.heart_rate}));
-    const regressionLine = [];
-    if (records.length > 0) {
-      const minAct = Math.min(...records.map(r=>r.activity));
-      const maxAct = Math.max(...records.map(r=>r.activity));
-      const a = parseFloat(reg.a);
-      const b = parseFloat(reg.b);
-      regressionLine.push({x: minAct, y: a*minAct + b});
-      regressionLine.push({x: maxAct, y: a*maxAct + b});
-    }
-
-    if (scatterChart) scatterChart.destroy();
-    scatterChart = new Chart(scatterCtx, {
-      type: 'scatter',
-      data: {
-        datasets: [
-          { label: 'Données réelles', data: points, backgroundColor: '#2B7FFF', pointRadius: 6, pointBorderColor: '#0B0F1C', pointBorderWidth: 2 },
-          { label: 'Régression linéaire', data: regressionLine, type: 'line', borderColor: '#FFA559', borderWidth: 3, fill: false, pointRadius: 0, tension: 0 }
-        ]
-      },
-      options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { labels: { color: '#EFF3FF' } } }, scales: { x: { title: { display: true, text: 'Activité (min/jour)', color: '#8E9ACF' }, ticks: { color: '#B8C4FF' } }, y: { title: { display: true, text: 'FC (bpm)', color: '#8E9ACF' }, ticks: { color: '#B8C4FF' } } } }
-    });
-
-    // Histogramme (distribution FC)
-    const hrValues = records.map(r => r.heart_rate);
-    const bins = [50,60,70,80,90,100];
-    const histData = new Array(bins.length-1).fill(0);
-    hrValues.forEach(hr => {
-      for (let i=0; i<bins.length-1; i++) {
-        if (hr >= bins[i] && hr < bins[i+1]) { histData[i]++; break; }
-        if (i === bins.length-2 && hr >= bins[bins.length-1]) histData[i]++;
-      }
-    });
-    const labels = bins.slice(0,-1).map((v,i)=> `${v}-${bins[i+1]}`);
-    if (histChart) histChart.destroy();
-    histChart = new Chart(histCtx, {
-      type: 'bar',
-      data: { labels, datasets: [{ label: 'Fréquence', data: histData, backgroundColor: '#2B7FFF', borderRadius: 12 }] },
-      options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { labels: { color: '#EFF3FF' } } }, scales: { x: { ticks: { color: '#B8C4FF' } }, y: { ticks: { color: '#B8C4FF' } } } }
-    });
-  }
-
-  refreshDashboard();
-</script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 </body>
 </html>
